@@ -59,7 +59,7 @@ class MyAudioSensor(context: Context): AudioSensor.AudioSensorListener {
         val fft = audioAnalysis.fft(data)
         queue.add(AudioData(System.currentTimeMillis(), data, fft))
         volume = audioAnalysis.toDB(data)
-        Log.d(LOG_NAME, "$volume")
+//        Log.d(LOG_NAME, "$volume")
 
         // 最大振幅の周波数
         val maxFrequency: Int = audioAnalysis.toMaxFrequency(fft, audioSensor.sampleRate)

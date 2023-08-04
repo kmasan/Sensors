@@ -8,27 +8,26 @@ import android.hardware.SensorManager
 import android.os.Handler
 import android.os.Looper
 import android.util.Log
-import androidx.appcompat.app.AppCompatActivity.SENSOR_SERVICE
+import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.mutableStateOf
 import org.apache.commons.csv.CSVFormat
 import org.apache.commons.csv.CSVPrinter
 import java.io.FileWriter
 import java.io.IOException
 
 abstract class SensorBase(private val context: Context): SensorEventListener {
-    private lateinit var sensorManager: SensorManager
-//    lateinit var externalFilePath: String
+    private val sensorManager: SensorManager = context.getSystemService(Context.SENSOR_SERVICE) as SensorManager
     var sensor: Sensor? = null
     var queue: ArrayDeque<String> = ArrayDeque(listOf())
     var csvRun = false
 
     abstract val sensorType: Int
-    abstract val sensorName:String
+    abstract val sensorName: String
+    abstract val sensorDelay: Int
     abstract val csvHeader: String
 
     fun init(){
-        sensorManager = context.getSystemService(SENSOR_SERVICE) as SensorManager
         sensor = sensorManager.getDefaultSensor(sensorType)
-//        externalFilePath = context.getExternalFilesDir(Environment.DIRECTORY_DOCUMENTS).toString()
     }
 
     fun start(){
@@ -63,9 +62,9 @@ abstract class SensorBase(private val context: Context): SensorEventListener {
             // こいつ(rnb0) が何回も呼ばれる
             val rnb = object : Runnable {
                 override fun run() {
-                    val queueClone = queue
+//                    val queueClone = queue
                     //書き込み開始
-                    for(data in queueClone){
+                    for(data in queue){
                         //データ保存
                         csvPrinter.printRecord(
                             data
@@ -95,9 +94,5 @@ abstract class SensorBase(private val context: Context): SensorEventListener {
             Log.d("csvWrite", "${e}:${e.message!!}")
             return false
         }
-    }
-
-    interface SensorListener{
-        fun getChangeSensor(data: MyAudioSensor.Companion.AudioData)
     }
 }
