@@ -9,9 +9,11 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
 import androidx.compose.foundation.Canvas
+import androidx.compose.foundation.ScrollState
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.*
 import androidx.compose.runtime.*
 import androidx.compose.runtime.livedata.observeAsState
@@ -38,8 +40,6 @@ class MainActivity : ComponentActivity() {
         setContent {
             val sensorButtonText by remember { viewModel.sensorButtonText }
             val csvButtonText by remember { viewModel.csvButtonText }
-            val sensorRun by remember { viewModel.sensorRun }
-            val csvRun by remember { viewModel.csvRun }
 
             SensorsTheme {
                 // A surface container using the 'background' color from the theme
@@ -48,37 +48,17 @@ class MainActivity : ComponentActivity() {
                     color = MaterialTheme.colors.background
                 ) {
                     Column(
+                        modifier = Modifier.verticalScroll(state = ScrollState(1)),
                         verticalArrangement = Arrangement.Center,
                         horizontalAlignment = Alignment.CenterHorizontally
                     ){
                         SensorViewer(sensorType = "acceleration", liveData = viewModel.accelerationText)
+                        SensorViewer(sensorType = "gyroscope", liveData = viewModel.gyroscopeText)
                         TextButton(text = sensorButtonText) {
-                            viewModel.sensorRun.value = when(sensorRun){
-                                true->{
-                                    viewModel.stopSensors()
-                                    viewModel.sensorButtonText.value = "sensor start"
-                                    false
-                                }
-                                false->{
-                                    viewModel.startSensors()
-                                    viewModel.sensorButtonText.value = "sensor stop"
-                                    true
-                                }
-                            }
+                            viewModel.switchRun()
                         }
                         TextButton(text = csvButtonText){
-                            viewModel.csvRun.value = when(csvRun){
-                                true->{
-                                    viewModel.stopCSV()
-                                    viewModel.csvButtonText.value = "csv start"
-                                    false
-                                }
-                                false->{
-                                    viewModel.startCSV("${System.currentTimeMillis()}")
-                                    viewModel.csvButtonText.value = "csw writing"
-                                    true
-                                }
-                            }
+                            viewModel.switchCSVRun()
                         }
                     }
                 }

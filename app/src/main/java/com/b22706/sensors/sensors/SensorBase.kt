@@ -19,6 +19,8 @@ abstract class SensorBase(private val context: Context): SensorEventListener {
     private val sensorManager: SensorManager = context.getSystemService(Context.SENSOR_SERVICE) as SensorManager
     var sensor: Sensor? = null
     var queue: ArrayDeque<String> = ArrayDeque(listOf())
+    val dataText = mutableStateOf("null")
+    var run = false
     var csvRun = false
 
     abstract val sensorType: Int
@@ -32,9 +34,11 @@ abstract class SensorBase(private val context: Context): SensorEventListener {
 
     fun start(){
         sensorManager.registerListener(this, sensor, SensorManager.SENSOR_DELAY_GAME)
+        run = true
     }
 
     fun stop(){
+        run = false
         if(csvRun) csvRun = false
         sensorManager.unregisterListener(this)
     }
@@ -49,7 +53,7 @@ abstract class SensorBase(private val context: Context): SensorEventListener {
         //CSVファイルの書き出し
         try{
             //書込み先指定
-            val writer = FileWriter("${path}/${fileName}-acc.csv")
+            val writer = FileWriter("$path/$fileName-$sensorName.csv")
 
             //書き込み準備
             val csvPrinter = CSVPrinter(

@@ -8,10 +8,10 @@ import android.hardware.SensorManager
 import android.util.Log
 import androidx.compose.runtime.mutableStateOf
 
-class Acceleration(context: Context): SensorBase(context) {
+class Gyroscope(context: Context): SensorBase(context) {
     companion object{
-        const val LOG_NAME = "Sensor.Acceleration"
-        data class AccelerationData(
+        const val LOG_NAME = "Sensor.Gyroscope"
+        data class GyroscopeData(
             val time: Long,
             val x: Float,
             val y: Float,
@@ -22,23 +22,23 @@ class Acceleration(context: Context): SensorBase(context) {
             }
         }
 
-        fun create(context: Context): Acceleration{
-            return Acceleration(context).apply { init() }
+        fun create(context: Context): Gyroscope{
+            return Gyroscope(context).apply { init() }
         }
     }
-    override val sensorType = Sensor.TYPE_LINEAR_ACCELERATION
-    override val sensorName = "linerAcceleration"
+    override val sensorType = Sensor.TYPE_GYROSCOPE
+    override val sensorName = "gyroscope"
     override val sensorDelay = SensorManager.SENSOR_DELAY_GAME
     override val csvHeader = "time,x,y,z"
 
     override fun onSensorChanged(event: SensorEvent) {
-        val data: () -> AccelerationData = {
+        val data: () -> GyroscopeData = {
             val time = System.currentTimeMillis()
             val x = event.values[0]
             val y = event.values[1]
             val z = event.values[2]
 
-            AccelerationData(time, x, y, z)
+            GyroscopeData(time, x, y, z)
         }
 
         queue.add(data().toString())
